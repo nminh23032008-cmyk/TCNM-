@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="vi" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thai Phien StudyHub — Kế Hoạch Học Tập THPT Thái Phiên</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        tpRed: {
+                            50: '#fef2f2',
+                            100: '#fee2e2',
+                            500: '#ef4444',
+                            600: '#dc2626',
+                            700: '#b91c1c',
+                            800: '#991b1b',
+                            900: '#7f1d1d',
+                        },
+                        tpGold: {
+                            400: '#facc15',
+                            500: '#eab308',
+                            600: '#ca8a04',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom UI Scrollbar & animations */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.03);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+        .glass-card {
+            backdrop-filter: blur(8px);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans antialiased min-h-full flex flex-col transition-colors duration-200">
+
+    <!-- Header / Navigation -->
+    <header class="bg-white/90 dark:bg-slate-800/90 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-30 glass-card transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <!-- Thai Phien High School Inspired Crest/Logo -->
+                <div class="w-10 h-10 bg-gradient-to-br from-tpRed-700 to-tpRed-900 text-white rounded-xl shadow-md flex items-center justify-center font-black text-lg border border-tpGold-500/30">
+                    TP
+                </div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <h1 class="text-base font-extrabold tracking-tight bg-gradient-to-r from-tpRed-700 via-tpRed-600 to-amber-600 dark:from-tpRed-500 dark:to-tpGold-400 bg-clip-text text-transparent">
+                            Thai Phien StudyHub
+                        </h1>
+                        <span class="text-[10px] font-semibold bg-tpRed-50 text-tpRed-700 dark:bg-tpRed-900/40 dark:text-tpRed-300 px-2 py-0.5 rounded-full border border-tpRed-200 dark:border-tpRed-800">
+                            THPT Thái Phiên
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Hệ thống Quản lý Học tập & Lộ trình Thi TN THPT</p>
+                </div>
+            </div>
+
+            <!-- Header Action Controls -->
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <!-- Dark Mode Toggle -->
+                <button onclick="toggleDarkMode()" title="Chuyển chế độ Sáng/Tối" class="p-2.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition">
+                    <i id="theme-icon" class="fa-solid fa-moon"></i>
+                </button>
+                
+                <!-- Quick Add Task Button -->
+                <button onclick="openTaskModal()" class="inline-flex items-center space-x-1.5 bg-tpRed-700 hover:bg-tpRed-800 text-white text-xs sm:text-sm font-semibold px-3 sm:px-4 py-2 rounded-xl shadow-sm transition active:scale-95">
+                    <i class="fa-solid fa-plus"></i>
+                    <span class="hidden sm:inline">Thêm Nhiệm Vụ</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+        <!-- Notification Toast -->
+        <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+            <div id="toast-content" class="bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 text-sm font-medium">
+                <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400 dark:text-emerald-600"></i>
+                <span id="toast-message">Thao tác thành công!</span>
+            </div>
+        </div>
+
+        <!-- Banner Countdown & Quick Target Banner -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Countdown Card -->
+            <div class="bg-gradient-to-r from-tpRed-800 via-tpRed-700 to-rose-900 text-white p-6 rounded-2xl shadow-lg relative overflow-hidden flex flex-col justify-between">
+                <div class="absolute -right-6 -bottom-6 text-white/5 text-9xl font-black select-none pointer-events-none">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <div class="flex items-center justify-between">
+                        <span class="bg-white/10 text-tpGold-400 text-xs font-bold px-3 py-1 rounded-full backdrop-blur-sm border border-white/10">
+                            <i class="fa-solid fa-fire mr-1"></i>Đếm ngược Kỳ Thi
+                        </span>
+                        <span class="text-xs text-slate-200">Kỳ thi TN THPT Quốc Gia</span>
+                    </div>
+                    <h2 class="text-lg font-bold mt-3">Sẵn sàng bứt phá mục tiêu!</h2>
+                </div>
+
+                <div class="grid grid-cols-4 gap-2 text-center my-4">
+                    <div class="bg-white/10 backdrop-blur-md rounded-xl p-2 border border-white/10">
+                        <span id="cd-days" class="block text-2xl font-extrabold text-tpGold-400">00</span>
+                        <span class="text-[10px] uppercase tracking-wider text-slate-300">Ngày</span>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-md rounded-xl p-2 border border-white/10">
+                        <span id="cd-hours" class="block text-2xl font-extrabold text-white">00</span>
+                        <span class="text-[10px] uppercase tracking-wider text-slate-300">Giờ</span>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-md rounded-xl p-2 border border-white/10">
+                        <span id="cd-mins" class="block text-2xl font-extrabold text-white">00</span>
+                        <span class="text-[10px] uppercase tracking-wider text-slate-300">Phút</span>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-md rounded-xl p-2 border border-white/10">
+                        <span id="cd-secs" class="block text-2xl font-extrabold text-white">00</span>
+                        <span class="text-[10px] uppercase tracking-wider text-slate-300">Giây</span>
+                    </div>
+                </div>
+
+                <div class="text-xs text-slate-200 flex items-center justify-between pt-2 border-t border-white/10">
+                    <span>Mục tiêu điểm số: <strong id="target-total-display" class="text-tpGold-400 font-bold">27.0 điểm</strong></span>
+                    <button onclick="scrollSection('section-target')" class="hover:underline text-tpGold-400 font-medium">Thay đổi <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                </div>
+            </div>
+
+            <!-- Target Combination Summary -->
+            <div id="section-target" class="lg:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between transition-colors">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-bullseye text-tpRed-600 dark:text-tpRed-500 text-lg"></i>
+                            <h2 class="text-base font-bold text-slate-800 dark:text-slate-100">Tổ Hợp Khối Thi & Mục Tiêu Điểm Số</h2>
+                        </div>
+                        <button onclick="openTargetModal()" class="text-xs bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-semibold px-3 py-1.5 rounded-lg transition">
+                            <i class="fa-solid fa-gear mr-1"></i>Cấu hình
+                        </button>
+                    </div>
+
+                    <div class="flex items-center space-x-3 mb-4">
+                        <span id="display-combo-code" class="bg-tpRed-700 text-white font-black text-sm px-3 py-1 rounded-lg">Khối A00</span>
+                        <span id="display-combo-subjects" class="text-xs text-slate-500 dark:text-slate-400 font-medium">Toán • Vật lý • Hóa học</span>
+                    </div>
+
+                    <!-- Subjects target list grid -->
+                    <div id="target-subjects-grid" class="grid grid-cols-3 gap-3">
+                        <!-- Rendered by JavaScript -->
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between text-xs">
+                    <span class="text-slate-500 dark:text-slate-400">Trường Đại học mục tiêu: <strong id="display-target-uni" class="text-slate-800 dark:text-slate-200 font-bold">Đại học Bách Khoa / Y Dược</strong></span>
+                    <span class="text-slate-500 dark:text-slate-400">Tổng điểm target: <strong id="display-target-score" class="text-tpRed-600 dark:text-tpRed-400 font-extrabold text-sm">27.0/30</strong></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Tabbed Navigation (Schedule / To-Do / Grade Log / Study Corner) -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden transition-colors">
+            <!-- Tabs Bar -->
+            <div class="flex border-b border-slate-200 dark:border-slate-700 overflow-x-auto bg-slate-50/50 dark:bg-slate-800/50">
+                <button onclick="switchTab('tab-todo')" id="btn-tab-todo" class="tab-btn py-3 px-5 text-sm font-bold border-b-2 border-tpRed-600 text-tpRed-600 dark:text-tpRed-400 flex items-center space-x-2 whitespace-nowrap">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span>Nhiệm Vụ & To-Do List</span>
+                </button>
+                <button onclick="switchTab('tab-schedule')" id="btn-tab-schedule" class="tab-btn py-3 px-5 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 border-b-2 border-transparent flex items-center space-x-2 whitespace-nowrap">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    <span>Thời Khóa Biểu Kép</span>
+                </button>
+                <button onclick="switchTab('tab-grades')" id="btn-tab-grades" class="tab-btn py-3 px-5 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 border-b-2 border-transparent flex items-center space-x-2 whitespace-nowrap">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Nhật Ký Điểm & Analytics</span>
+                </button>
+                <button onclick="switchTab('tab-corner')" id="btn-tab-corner" class="tab-btn py-3 px-5 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 border-b-2 border-transparent flex items-center space-x-2 whitespace-nowrap">
+                    <i class="fa-solid fa-brain"></i>
+                    <span>Góc Học Tập & Pomodoro</span>
+                </button>
+            </div>
+
+            <div class="p-5 sm:p-6">
+                <!-- TAB 1: TO-DO LIST -->
+                <div id="tab-todo" class="tab-content space-y-4">
+                    <!-- Filters Toolbar -->
+                    <div class="flex flex-col md:flex-row items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-700">
+                        <div class="w-full md:w-1/3 relative">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </span>
+                            <input type="text" id="search-task" oninput="renderTasks()" placeholder="Tìm kiếm bài tập, chuyên đề..." class="w-full pl-9 pr-4 py-2 text-xs sm:text-sm bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-tpRed-500">
+                        </div>
+
+                        <div class="w-full md:w-auto flex flex-wrap items-center gap-2">
+                            <select id="filter-priority" onchange="renderTasks()" class="text-xs sm:text-sm bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-tpRed-500">
+                                <option value="ALL">Tất cả độ ưu tiên</option>
+                                <option value="Gấp">Gấp 🔥</option>
+                                <option value="Quan trọng">Quan trọng ⚡</option>
+                                <option value="Thường">Thường ☕</option>
+                            </select>
+
+                            <select id="filter-status" onchange="renderTasks()" class="text-xs sm:text-sm bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-tpRed-500">
+                                <option value="ALL">Tất cả trạng thái</option>
+                                <option value="Cần làm">Cần làm</option>
+                                <option value="Đang làm">Đang làm</option>
+                                <option value="Hoàn thành">Hoàn thành</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Tasks Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 dark:bg-slate-700/40 text-slate-400 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">
+                                    <th class="py-3 px-4">Nhiệm vụ / Chuyên đề</th>
+                                    <th class="py-3 px-4">Môn học</th>
+                                    <th class="py-3 px-4">Ưu tiên</th>
+                                    <th class="py-3 px-4">Hạn hoàn thành</th>
+                                    <th class="py-3 px-4">Trạng thái</th>
+                                    <th class="py-3 px-4 text-right">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="task-list-body" class="divide-y divide-slate-100 dark:divide-slate-700/50 text-xs sm:text-sm">
+                                <!-- Rendered dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TAB 2: SCHEDULE (THỜI KHÓA BIỂU KÉP) -->
+                <div id="tab-schedule" class="tab-content hidden space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-800 dark:text-slate-100">Thời Khóa Biểu Học Chính Khóa (THPT Thái Phiên) & Lịch Học Thêm</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Tối ưu thời gian học sáng ở trường và ôn luyện buổi tối.</p>
+                        </div>
+                        <button onclick="openScheduleModal()" class="text-xs bg-tpRed-700 hover:bg-tpRed-800 text-white font-semibold px-3 py-1.5 rounded-lg transition">
+                            <i class="fa-solid fa-plus mr-1"></i>Thêm Lịch
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="schedule-grid">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+
+                <!-- TAB 3: GRADE LOG & ANALYTICS -->
+                <div id="tab-grades" class="tab-content hidden space-y-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Chart View -->
+                        <div class="lg:col-span-2 bg-slate-50 dark:bg-slate-700/30 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-700">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4 flex items-center space-x-2">
+                                <i class="fa-solid fa-chart-simple text-tpRed-600"></i>
+                                <span>Biểu đồ Tiến trình Điểm Thi Thử / Kiểm Tra</span>
+                            </h3>
+                            <div class="h-64 relative">
+                                <canvas id="gradeChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Add Grade Log Form -->
+                        <div class="bg-slate-50 dark:bg-slate-700/30 p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-slate-700">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 flex items-center space-x-2">
+                                <i class="fa-solid fa-pen-to-square text-tpRed-600"></i>
+                                <span>Nhập Điểm Thi Mới</span>
+                            </h3>
+                            <form onsubmit="handleAddGrade(event)" class="space-y-3">
+                                <div>
+                                    <label class="block text-[11px] font-medium text-slate-500 dark:text-slate-400 mb-1">Môn học</label>
+                                    <select id="grade-subject" required class="w-full text-xs p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg">
+                                        <option value="Toán">Toán</option>
+                                        <option value="Vật lý">Vật lý</option>
+                                        <option value="Hóa học">Hóa học</option>
+                                        <option value="Ngữ văn">Ngữ văn</option>
+                                        <option value="Tiếng Anh">Tiếng Anh</option>
+                                        <option value="Sinh học">Sinh học</option>
+                                        <option value="Lịch sử">Lịch sử</option>
+                                        <option value="Địa lý">Địa lý</option>
+                                        <option value="GDKT-PL">GDKT-PL</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-[11px] font-medium text-slate-500 dark:text-slate-400 mb-1">Loại Kỳ Thi / Bài Kiểm Tra</label>
+                                    <input type="text" id="grade-title" required placeholder="VD: Thi thử Trường Thái Phiên Lần 1" class="w-full text-xs p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg">
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="block text-[11px] font-medium text-slate-500 dark:text-slate-400 mb-1">Điểm Số (Thang 10)</label>
+                                        <input type="number" step="0.1" min="0" max="10" id="grade-score" required placeholder="8.5" class="w-full text-xs p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] font-medium text-slate-500 dark:text-slate-400 mb-1">Ngày Thi</label>
+                                        <input type="date" id="grade-date" required class="w-full text-xs p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg">
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="w-full mt-2 bg-tpRed-700 hover:bg-tpRed-800 text-white text-xs font-bold py-2.5 rounded-lg shadow-sm transition">
+                                    Lưu Điểm Kiểm Tra
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Recent Grade History Table -->
+                    <div>
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">Lịch Sử Điểm Thi Đã Nhập</h3>
+                        <div class="overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-xl">
+                            <table class="w-full text-left text-xs">
+                                <thead>
+                                    <tr class="bg-slate-50 dark:bg-slate-700/50 text-slate-400 border-b border-slate-200 dark:border-slate-700">
+                                        <th class="p-3">Bài Kiểm Tra</th>
+                                        <th class="p-3">Môn Học</th>
+                                        <th class="p-3">Điểm Đạt Được</th>
+                                        <th class="p-3">Ngày Thi</th>
+                                        <th class="p-3 text-right">Thao Tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="grade-table-body" class="divide-y divide-slate-100 dark:divide-slate-700">
+                                    <!-- Rendered dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 4: STUDY CORNER & POMODORO -->
+                <div id="tab-corner" class="tab-content hidden space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Pomodoro Focus Timer -->
+                        <div class="bg-slate-50 dark:bg-slate-700/30 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 text-center flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-4">
+                                    <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                        <i class="fa-solid fa-stopwatch text-tpRed-600 mr-1"></i>Đồng Hồ Pomodoro Ôn Thi
+                                    </span>
+                                    <span id="pomo-status" class="bg-tpRed-100 dark:bg-tpRed-900/40 text-tpRed-700 dark:text-tpRed-300 text-[10px] font-bold px-2.5 py-0.5 rounded-full">
+                                        Phiên Tập Trung (25p)
+                                    </span>
+                                </div>
+
+                                <div id="pomo-timer" class="text-5xl font-black text-slate-800 dark:text-slate-100 tracking-wider my-6">
+                                    25:00
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-center space-x-3">
+                                <button id="pomo-btn-start" onclick="togglePomodoro()" class="bg-tpRed-700 hover:bg-tpRed-800 text-white font-bold text-xs px-6 py-2.5 rounded-xl shadow-md transition">
+                                    Bắt Đầu
+                                </button>
+                                <button onclick="resetPomodoro()" class="bg-slate-200 dark:bg-slate-600 hover:bg-slate-300 dark:hover:bg-slate-500 text-slate-700 dark:text-slate-200 font-bold text-xs px-4 py-2.5 rounded-xl transition">
+                                    Đặt Lại
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Quick Notes / Formula Corner -->
+                        <div class="bg-slate-50 dark:bg-slate-700/30 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                        <i class="fa-solid fa-note-sticky text-amber-500 mr-1"></i>Ghi Chú Nhanh / Mẹo Giải Đề
+                                    </span>
+                                    <button onclick="saveQuickNotes()" class="text-xs text-tpRed-600 dark:text-tpRed-400 font-bold hover:underline">
+                                        Lưu Ghi Chú
+                                    </button>
+                                </div>
+                                <p class="text-[11px] text-slate-400 mb-2">Nơi lưu từ vựng Anh, công thức Lý/Hóa hoặc mẹo giải nhanh đề trắc nghiệm.</p>
+                            </div>
+
+                            <textarea id="quick-notes-area" placeholder="VD: Công thức tính nhanh thể tích khối chóp S.ABC... Từ vựng Tiếng Anh Unit 5..." class="w-full h-36 p-3 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-tpRed-500 resize-none"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 py-4 text-center text-xs text-slate-400 transition-colors">
+        StudyHub dành riêng cho Học sinh THPT Thái Phiên • Dữ liệu lưu tự động trên LocalStorage
+    </footer>
+
+    <!-- MODAL 1: Target Combination Modal -->
+    <div id="modal-target" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-lg w-full p-6 border border-slate-100 dark:border-slate-700">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700">
+                <h3 class="text-sm font-bold text-slate-800 dark:text-slate-100">Cấu Hình Khối Thi & Mục Tiêu Điểm</h3>
+                <button onclick="closeModal('modal-target')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <form onsubmit="handleSaveTarget(event)" class="space-y-4 pt-4 text-xs">
+                <div>
+                    <label class="block font-semibold text-slate-600 dark:text-slate-300 mb-1">Chọn Khối Thi Mục Tiêu</label>
+                    <select id="target-combo-select" onchange="updateTargetModalSubjects()" class="w-full p-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl">
+                        <option value="A00">Khối A00 (Toán, Vật lý, Hóa học)</option>
+                        <option value="A01">Khối A01 (Toán, Vật lý, Tiếng Anh)</option>
+                        <option value="B00">Khối B00 (Toán, Hóa học, Sinh học)</option>
+                        <option value="C00">Khối C00 (Ngữ văn, Lịch sử, Địa lý)</option>
+                        <option value="D01">Khối D01 (Toán, Ngữ văn, Tiếng Anh)</option>
+                        <option value="D07">Khối D07 (Toán, Hóa học, Tiếng Anh)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-600 dark:text-slate-300 mb-1">Trường Đại học mong muốn</label>
+                    <input type="text" id="target-uni-input" required placeholder="VD: Đại học Bách Khoa / Đại học Y Dược" class="w-full p-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl">
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block font-semibold text-slate-600 dark:text-slate-300">Đặt Mục Tiêu Điểm Cho 3 Môn Khối Thi (Thang 10)</label>
+                    <div id="target-subject-inputs" class="space-y-2">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeModal('modal-target')" class="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl font-semibold">Hủy</button>
+                    <button type="submit" class="px-5 py-2 bg-tpRed-700 text-white rounded-xl font-bold hover:bg-tpRed-800">Lưu Mục Tiêu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: Add / Edit Task Modal -->
+    <div id="modal-task" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-lg w-full p-6 border border-slate-100 dark:border-slate-700">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700">
+                <h3 id="task-modal-title" class="text-sm font-bold text-slate-800 dark:text-slate-100">Thêm Nhiệm Vụ Học Tập</h3>
+                <button onclick="closeModal('modal-task')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <form onsubmit="handleSaveTask(event)" class="space-y-3 pt-3 text-xs">
+                <input type="hidden" id="task-id">
+                
+                <div>
+                    <label class="block font-semibold text-slate-600 dark:text-slate-300 mb-1">Tên Nhiệm vụ / Bài tập (*)</label>
+                    <input type="text" id="task-name" required placeholder="VD: Giải 1 đề thi thử môn Toán Thái Phiên năm 2025" class="w-full p-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-slate-600 dark:text-slate-300 mb-1">Môn học</label>
+                        <select id="task-subject" class="w-full p-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl">
+                            <option value="Toán">Toán</option>
+                            <option value="Vật lý">Vật lý</option>
+                            <option value="Hóa học">Hóa học</option>
+                            <option value="Ngữ văn">Ngữ văn</option>
+                            <option value="Tiếng Anh">Tiếng Anh</option>
+                            <option value="Sinh học">Sinh học</option>
+                            <option value="Lịch sử">Lịch sử</option>
+                            <option value="Địa lý">Địa lý</option>
+                            <option value="GDKT-PL">GDKT-PL</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold text-slate-600 dark:text-slate-300 mb-1">Độ Ưu Tiên</label>
+                        <select id="task-priority" class="w-full p-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl">
+                            <option value="Gấp">Gấp 🔥</option>
+                            <option value="Quan trọng" selected>Quan trọng ⚡</option>
+                            <option value="Thường">Thường ☕</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-slate-600 dark:text-slate-300 mb-1">Trạng thái</label>
+                        <select id="task-status" class="w-full p-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl">
+                            <option value="Cần làm" selected>Cần làm</option>
+                            <option value="Đang làm">Đang làm</option>
+                            <option value="Hoàn thành">Hoàn thành</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold text-slate-600 dark:text-slate-300 mb-1">Hạn Hoàn Thành</label>
+                        <input type="date" id="task-deadline" required class="w-full p-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl">
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeModal('modal-task')" class="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl font-semibold">Hủy</button>
+                    <button type="submit" class="px-5 py-2 bg-tpRed-700 text-white rounded-xl font-bold hover:bg-tpRed-800">Lưu Nhiệm Vụ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 3: Schedule Modal -->
+    <div id="modal-schedule" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-lg w-full p-6 border border-slate-100 dark:border-slate-700">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-700">
+                <h3 class="text-sm font-bold text-slate-800 dark:text-slate-100">Thêm Lịch Học Vào Thời Khóa Biểu</h3>
+                <button onclick="closeModal('modal-schedule')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <form onsubmit="handleSaveSchedule(event)" class="space-y-3 pt-3 text-xs">
+                <div>
+                    <label class="block font-semibold text-slate-600 dark:text-slate-300 mb-1">Thứ Trong Tuần</label>
+                    <select id="sched-day" class="w-full p-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl">
+                        <option value="Thứ 2">Thứ 2</option>
+                        <option value="Thứ 3">Thứ 3</option>
+                        <option value="Thứ 4">Thứ 4</option>
+                        <option value="Thứ 5">Thứ 5</option>
+                        <option value="Thứ 6">Thứ 6</option>
+                        <option value="Thứ 7">Thứ 7</option>
+                        <option value="Chủ Nhật">Chủ Nhật</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-slate-600 dark:text-slate-300 mb-1">Loại Lịch</label>
+                        <select id="sched-type" class="w-full p-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl">
+                            <option value="Chính khóa">Chính khóa THPT Thái Phiên</option>
+                            <option value="Học thêm">Học thêm / Ôn thi</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold text-slate-600 dark:text-slate-300 mb-1">Môn Học / Nội Dung</label>
+                        <input type="text" id="sched-subject" required placeholder="VD: Luyện đề Toán thầy Nam" class="w-full p-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-600 dark:text-slate-300 mb-1">Khung Giờ Học</label>
+                    <input type="text" id="sched-time" required placeholder="VD: 19:30 - 21:30" class="w-full p-2.5 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl">
+                </div>
+
+                <div class="flex items-center justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeModal('modal-schedule')" class="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl font-semibold">Hủy</button>
+                    <button type="submit" class="px-5 py-2 bg-tpRed-700 text-white rounded-xl font-bold hover:bg-tpRed-800">Lưu Lịch Học</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Default Sample Data specifically tailored for Thai Phien High School Students
+        const defaultTargetData = {
+            combo: "A00",
+            university: "Đại học Bách Khoa / Y Dược",
+            subjects: [
+                { name: "Toán", target: 9.2 },
+                { name: "Vật lý", target: 8.8 },
+                { name: "Hóa học", target: 9.0 }
+            ]
+        };
+
+        const defaultTasks = [
+            { id: "1", name: "Giải 1 đề thi thử môn Toán THPT Thái Phiên Lần 1", subject: "Toán", priority: "Gấp", deadline: "2026-05-10", status: "Cần làm" },
+            { id: "2", name: "Ôn tập Lý thuyết Chương 5 Sóng ánh sáng", subject: "Vật lý", priority: "Quan trọng", deadline: "2026-05-12", status: "Đang làm" },
+            { id: "3", name: "Làm bài tập Este - Lipit nâng cao", subject: "Hóa học", priority: "Thường", deadline: "2026-05-15", status: "Hoàn thành" }
+        ];
+
+        const defaultSchedules = [
+            { id: "s1", day: "Thứ 2", type: "Chính khóa", subject: "Sáng: Toán, Văn, Anh, Lý, Hóa (Thái Phiên)", time: "07:00 - 11:30" },
+            { id: "s1_extra", day: "Thứ 2", type: "Học thêm", subject: "Tối: Luyện đề Toán nâng cao", time: "18:00 - 20:00" },
+            { id: "s2", day: "Thứ 4", type: "Chính khóa", subject: "Sáng: Chính khóa THPT Thái Phiên", time: "07:00 - 11:30" },
+            { id: "s2_extra", day: "Thứ 4", type: "Học thêm", subject: "Tối: Luyện đề Vật lý Thầy Tuấn", time: "19:30 - 21:30" }
+        ];
+
+        const defaultGrades = [
+            { id: "g1", subject: "Toán", title: "Thi giữa kỳ 2 THPT Thái Phiên", score: 8.8, date: "2026-03-20" },
+            { id: "g2", subject: "Vật lý", title: "Kiểm tra 1 tiết lần 2", score: 8.5, date: "2026-04-05" },
+            { id: "g3", subject: "Hóa học", title: "Thi thử Trường Thái Phiên", score: 9.0, date: "2026-04-18" }
+        ];
+
+        // State Management
+        let targetData = JSON.parse(localStorage.getItem('tp_target_data')) || defaultTargetData;
+        let tasks = JSON.parse(localStorage.getItem('tp_tasks_data')) || defaultTasks;
+        let schedules = JSON.parse(localStorage.getItem('tp_sched_data')) || defaultSchedules;
+        let grades = JSON.parse(localStorage.getItem('tp_grades_data')) || defaultGrades;
+
+        let gradeChartInstance = null;
+        let pomoInterval = null;
+        let pomoTime = 25 * 60;
+        let isPomoRunning = false;
+
+        // Init App
+        window.onload = function() {
+            initDarkMode();
+            initCountdown();
+            renderTargetSection();
+            renderTasks();
+            renderSchedules();
+            renderGrades();
+            initChart();
+            loadQuickNotes();
+        };
+
+        // Dark Mode Logic
+        function initDarkMode() {
+            if (localStorage.getItem('tp_dark_mode') === 'true') {
+                document.documentElement.classList.add('dark');
+                document.getElementById('theme-icon').className = "fa-solid fa-sun";
+            }
+        }
+
+        function toggleDarkMode() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('tp_dark_mode', isDark);
+            document.getElementById('theme-icon').className = isDark ? "fa-solid fa-sun" : "fa-solid fa-moon";
+        }
+
+        // Toast System
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').textContent = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+            }, 2500);
+        }
+
+        // Countdown Timer Logic (National High School Exam Countdown)
+        function initCountdown() {
+            // Target Exam Date: Mid-June
+            const examDate = new Date('2026-06-25T07:30:00').getTime();
+
+            function updateCD() {
+                const now = new Date().getTime();
+                const diff = examDate - now;
+
+                if (diff <= 0) {
+                    document.getElementById('cd-days').textContent = "00";
+                    return;
+                }
+
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+                document.getElementById('cd-days').textContent = days.toString().padStart(2, '0');
+                document.getElementById('cd-hours').textContent = hours.toString().padStart(2, '0');
+                document.getElementById('cd-mins').textContent = mins.toString().padStart(2, '0');
+                document.getElementById('cd-secs').textContent = secs.toString().padStart(2, '0');
+            }
+
+            updateCD();
+            setInterval(updateCD, 1000);
+        }
+
+        // Render Target Combination Section
+        function renderTargetSection() {
+            document.getElementById('display-combo-code').textContent = `Khối ${targetData.combo}`;
+            document.getElementById('display-target-uni').textContent = targetData.university;
+
+            const grid = document.getElementById('target-subjects-grid');
+            grid.innerHTML = '';
+
+            let totalTarget = 0;
+            const subjectNames = targetData.subjects.map(s => s.name).join(' • ');
+            document.getElementById('display-combo-subjects').textContent = subjectNames;
+
+            targetData.subjects.forEach(sub => {
+                totalTarget += parseFloat(sub.target || 0);
+                grid.innerHTML += `
+                    <div class="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700 text-center">
+                        <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block">${sub.name}</span>
+                        <span class="text-lg font-black text-tpRed-700 dark:text-tpGold-400">${sub.target} <span class="text-[10px] font-normal text-slate-400">điểm</span></span>
+                    </div>
+                `;
+            });
+
+            document.getElementById('display-target-score').textContent = `${totalTarget.toFixed(1)}/30`;
+            document.getElementById('target-total-display').textContent = `${totalTarget.toFixed(1)} điểm`;
+            
+            localStorage.setItem('tp_target_data', JSON.stringify(targetData));
+        }
+
+        function openTargetModal() {
+            document.getElementById('target-combo-select').value = targetData.combo;
+            document.getElementById('target-uni-input').value = targetData.university;
+            updateTargetModalSubjects();
+            document.getElementById('modal-target').classList.remove('hidden');
+        }
+
+        function updateTargetModalSubjects() {
+            const combo = document.getElementById('target-combo-select').value;
+            const map = {
+                'A00': ['Toán', 'Vật lý', 'Hóa học'],
+                'A01': ['Toán', 'Vật lý', 'Tiếng Anh'],
+                'B00': ['Toán', 'Hóa học', 'Sinh học'],
+                'C00': ['Ngữ văn', 'Lịch sử', 'Địa lý'],
+                'D01': ['Toán', 'Ngữ văn', 'Tiếng Anh'],
+                'D07': ['Toán', 'Hóa học', 'Tiếng Anh'],
+            };
+            const subs = map[combo] || ['Toán', 'Vật lý', 'Hóa học'];
+            const container = document.getElementById('target-subject-inputs');
+            container.innerHTML = '';
+
+            subs.forEach((sName, idx) => {
+                const existingVal = targetData.subjects[idx]?.target || 9.0;
+                container.innerHTML += `
+                    <div class="flex items-center justify-between">
+                        <span class="font-medium text-slate-700 dark:text-slate-200">${sName}:</span>
+                        <input type="number" step="0.1" min="0" max="10" value="${existingVal}" class="sub-target-input text-xs p-2 border border-slate-200 dark:border-slate-600 dark:bg-slate-700 rounded-lg w-24" data-subject="${sName}">
+                    </div>
+                `;
+            });
+        }
+
+        function handleSaveTarget(e) {
+            e.preventDefault();
+            const combo = document.getElementById('target-combo-select').value;
+            const uni = document.getElementById('target-uni-input').value;
+            const inputs = document.querySelectorAll('.sub-target-input');
+            const subs = [];
+
+            inputs.forEach(inp => {
+                subs.push({
+                    name: inp.dataset.subject,
+                    target: parseFloat(inp.value) || 0
+                });
+            });
+
+            targetData = { combo, university: uni, subjects: subs };
+            renderTargetSection();
+            closeModal('modal-target');
+            showToast("Đã cập nhật khối thi mục tiêu!");
+        }
+
+        // Render Tasks To-Do List
+        function renderTasks() {
+            const searchQuery = document.getElementById('search-task').value.toLowerCase();
+            const priorityFilter = document.getElementById('filter-priority').value;
+            const statusFilter = document.getElementById('filter-status').value;
+
+            const tbody = document.getElementById('task-list-body');
+            tbody.innerHTML = '';
+
+            const filtered = tasks.filter(t => {
+                const matchSearch = t.name.toLowerCase().includes(searchQuery) || t.subject.toLowerCase().includes(searchQuery);
+                const matchPriority = priorityFilter === 'ALL' || t.priority === priorityFilter;
+                const matchStatus = statusFilter === 'ALL' || t.status === statusFilter;
+                return matchSearch && matchPriority && matchStatus;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-center text-slate-400">Không tìm thấy nhiệm vụ học tập nào.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach(t => {
+                let prioBadge = t.priority === 'Gấp' ? 'bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400' :
+                                t.priority === 'Quan trọng' ? 'bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400' :
+                                'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300';
+
+                let statusBadge = t.status === 'Hoàn thành' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400' :
+                                  t.status === 'Đang làm' ? 'bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400' :
+                                  'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400';
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-700/30">
+                        <td class="py-3 px-4 font-semibold text-slate-800 dark:text-slate-100">${escapeHTML(t.name)}</td>
+                        <td class="py-3 px-4"><span class="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded">${escapeHTML(t.subject)}</span></td>
+                        <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[11px] font-bold ${prioBadge}">${t.priority}</span></td>
+                        <td class="py-3 px-4 text-slate-500 dark:text-slate-400">${t.deadline}</td>
+                        <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[11px] font-bold ${statusBadge}">${t.status}</span></td>
+                        <td class="py-3 px-4 text-right space-x-1">
+                            <button onclick="editTask('${t.id}')" title="Sửa" class="p-1.5 text-slate-400 hover:text-indigo-600"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteTask('${t.id}')" title="Xóa" class="p-1.5 text-slate-400 hover:text-rose-600"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            localStorage.setItem('tp_tasks_data', JSON.stringify(tasks));
+        }
+
+        function openTaskModal(taskId = null) {
+            document.getElementById('task-id').value = '';
+            document.getElementById('task-name').value = '';
+            document.getElementById('task-deadline').value = new Date().toISOString().split('T')[0];
+
+            if (taskId) {
+                const t = tasks.find(x => x.id === taskId);
+                if (t) {
+                    document.getElementById('task-id').value = t.id;
+                    document.getElementById('task-name').value = t.name;
+                    document.getElementById('task-subject').value = t.subject;
+                    document.getElementById('task-priority').value = t.priority;
+                    document.getElementById('task-status').value = t.status;
+                    document.getElementById('task-deadline').value = t.deadline;
+                }
+            }
+            document.getElementById('modal-task').classList.remove('hidden');
+        }
+
+        function handleSaveTask(e) {
+            e.preventDefault();
+            const id = document.getElementById('task-id').value;
+            const name = document.getElementById('task-name').value;
+            const subject = document.getElementById('task-subject').value;
+            const priority = document.getElementById('task-priority').value;
+            const status = document.getElementById('task-status').value;
+            const deadline = document.getElementById('task-deadline').value;
+
+            if (id) {
+                tasks = tasks.map(t => t.id === id ? { id, name, subject, priority, status, deadline } : t);
+            } else {
+                tasks.push({ id: Date.now().toString(), name, subject, priority, status, deadline });
+            }
+
+            renderTasks();
+            closeModal('modal-task');
+            showToast("Đã lưu nhiệm vụ!");
+        }
+
+        function editTask(id) { openTaskModal(id); }
+        function deleteTask(id) {
+            if (confirm("Bạn có muốn xóa nhiệm vụ này không?")) {
+                tasks = tasks.filter(t => t.id !== id);
+                renderTasks();
+                showToast("Đã xóa nhiệm vụ!");
+            }
+        }
+
+        // Render Dual Schedule Section
+        function renderSchedules() {
+            const grid = document.getElementById('schedule-grid');
+            grid.innerHTML = '';
+
+            const days = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ Nhật"];
+
+            days.forEach(day => {
+                const dayScheds = schedules.filter(s => s.day === day);
+                if (dayScheds.length > 0) {
+                    let itemsHtml = '';
+                    dayScheds.forEach(s => {
+                        const badgeColor = s.type === 'Chính khóa' ? 'bg-tpRed-100 text-tpRed-800 dark:bg-tpRed-900/40 dark:text-tpRed-300' : 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300';
+                        itemsHtml += `
+                            <div class="p-2.5 bg-slate-50 dark:bg-slate-700/50 rounded-xl border border-slate-100 dark:border-slate-600 flex items-start justify-between">
+                                <div>
+                                    <span class="text-[10px] font-bold px-2 py-0.5 rounded ${badgeColor}">${s.type}</span>
+                                    <h4 class="text-xs font-bold text-slate-800 dark:text-slate-100 mt-1">${escapeHTML(s.subject)}</h4>
+                                    <span class="text-[11px] text-slate-400"><i class="fa-regular fa-clock mr-1"></i>${s.time}</span>
+                                </div>
+                                <button onclick="deleteSchedule('${s.id}')" class="text-slate-300 hover:text-rose-500 text-xs"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                        `;
+                    });
+
+                    grid.innerHTML += `
+                        <div class="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                            <h4 class="text-xs font-black uppercase text-tpRed-700 dark:text-tpGold-400 border-b border-slate-100 dark:border-slate-700 pb-2 mb-3">${day}</h4>
+                            <div class="space-y-2">${itemsHtml}</div>
+                        </div>
+                    `;
+                }
+            });
+
+            localStorage.setItem('tp_sched_data', JSON.stringify(schedules));
+        }
+
+        function openScheduleModal() {
+            document.getElementById('modal-schedule').classList.remove('hidden');
+        }
+
+        function handleSaveSchedule(e) {
+            e.preventDefault();
+            const day = document.getElementById('sched-day').value;
+            const type = document.getElementById('sched-type').value;
+            const subject = document.getElementById('sched-subject').value;
+            const time = document.getElementById('sched-time').value;
+
+            schedules.push({ id: Date.now().toString(), day, type, subject, time });
+            renderSchedules();
+            closeModal('modal-schedule');
+            showToast("Đã thêm lịch học mới!");
+        }
+
+        function deleteSchedule(id) {
+            schedules = schedules.filter(s => s.id !== id);
+            renderSchedules();
+            showToast("Đã xóa lịch học!");
+        }
+
+        // Render Grades & Chart
+        function renderGrades() {
+            const tbody = document.getElementById('grade-table-body');
+            tbody.innerHTML = '';
+
+            grades.forEach(g => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-700/30">
+                        <td class="p-3 font-semibold text-slate-800 dark:text-slate-100">${escapeHTML(g.title)}</td>
+                        <td class="p-3"><span class="bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded text-slate-600 dark:text-slate-300">${g.subject}</span></td>
+                        <td class="p-3 font-bold text-tpRed-600 dark:text-tpGold-400">${g.score}</td>
+                        <td class="p-3 text-slate-400">${g.date}</td>
+                        <td class="p-3 text-right">
+                            <button onclick="deleteGrade('${g.id}')" class="text-slate-400 hover:text-rose-600"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            localStorage.setItem('tp_grades_data', JSON.stringify(grades));
+            updateChart();
+        }
+
+        function handleAddGrade(e) {
+            e.preventDefault();
+            const subject = document.getElementById('grade-subject').value;
+            const title = document.getElementById('grade-title').value;
+            const score = parseFloat(document.getElementById('grade-score').value);
+            const date = document.getElementById('grade-date').value;
+
+            grades.push({ id: Date.now().toString(), subject, title, score, date });
+            renderGrades();
+            document.getElementById('grade-title').value = '';
+            document.getElementById('grade-score').value = '';
+            showToast("Đã ghi nhận điểm số!");
+        }
+
+        function deleteGrade(id) {
+            grades = grades.filter(g => g.id !== id);
+            renderGrades();
+            showToast("Đã xóa điểm thi!");
+        }
+
+        // Chart.js Setup
+        function initChart() {
+            const ctx = document.getElementById('gradeChart').getContext('2d');
+            gradeChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: grades.map(g => g.title),
+                    datasets: [{
+                        label: 'Điểm số thi thử',
+                        data: grades.map(g => g.score),
+                        borderColor: '#b91c1c',
+                        backgroundColor: 'rgba(185, 28, 28, 0.1)',
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { min: 0, max: 10 }
+                    }
+                }
+            });
+        }
+
+        function updateChart() {
+            if (!gradeChartInstance) return;
+            gradeChartInstance.data.labels = grades.map(g => g.title);
+            gradeChartInstance.data.datasets[0].data = grades.map(g => g.score);
+            gradeChartInstance.update();
+        }
+
+        // Pomodoro Timer Logic
+        function togglePomodoro() {
+            const btn = document.getElementById('pomo-btn-start');
+            if (isPomoRunning) {
+                clearInterval(pomoInterval);
+                isPomoRunning = false;
+                btn.textContent = "Bắt Đầu";
+                btn.className = "bg-tpRed-700 hover:bg-tpRed-800 text-white font-bold text-xs px-6 py-2.5 rounded-xl shadow-md transition";
+            } else {
+                isPomoRunning = true;
+                btn.textContent = "Tạm Dừng";
+                btn.className = "bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs px-6 py-2.5 rounded-xl shadow-md transition";
+                
+                pomoInterval = setInterval(() => {
+                    if (pomoTime > 0) {
+                        pomoTime--;
+                        updatePomoDisplay();
+                    } else {
+                        clearInterval(pomoInterval);
+                        isPomoRunning = false;
+                        alert("Hoàn thành 25 phút tập trung! Hãy nghỉ ngơi 5 phút nhé.");
+                        pomoTime = 25 * 60;
+                        updatePomoDisplay();
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetPomodoro() {
+            clearInterval(pomoInterval);
+            isPomoRunning = false;
+            pomoTime = 25 * 60;
+            updatePomoDisplay();
+            document.getElementById('pomo-btn-start').textContent = "Bắt Đầu";
+        }
+
+        function updatePomoDisplay() {
+            const m = Math.floor(pomoTime / 60).toString().padStart(2, '0');
+            const s = (pomoTime % 60).toString().padStart(2, '0');
+            document.getElementById('pomo-timer').textContent = `${m}:${s}`;
+        }
+
+        // Quick Notes
+        function loadQuickNotes() {
+            const saved = localStorage.getItem('tp_quick_notes');
+            if (saved) document.getElementById('quick-notes-area').value = saved;
+        }
+
+        function saveQuickNotes() {
+            localStorage.setItem('tp_quick_notes', document.getElementById('quick-notes-area').value);
+            showToast("Đã lưu ghi chú nhanh!");
+        }
+
+        // Tab Switcher
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('border-tpRed-600', 'text-tpRed-600', 'dark:text-tpRed-400');
+                btn.classList.add('border-transparent', 'text-slate-500');
+            });
+
+            document.getElementById(tabId).classList.remove('hidden');
+            const activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.classList.add('border-tpRed-600', 'text-tpRed-600', 'dark:text-tpRed-400');
+            activeBtn.classList.remove('border-transparent', 'text-slate-500');
+        }
+
+        // Helpers
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        function scrollSection(id) { document.getElementById(id).scrollIntoView({ behavior: 'smooth' }); }
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag));
+        }
+    </script>
+</body>
+</html>
